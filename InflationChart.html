@@ -16,7 +16,7 @@
           Starting point:<br>
           <input type=text value=7.3 id=gdpnp> GDPNP ($T)<br>
           <input type=text value=19.2 id=gdpp> GDPP ($T)<br>
-          <input type=text value=2 id=inflation> Inflation (%)<br>
+          <input type=text value=2 id=inflation> Inflation (% per year)<br>
           <input type=text value=5.8 id=savings> Savings ($T)<br>
           <input type=text value=53 id=inventory> Inventory ($T)<br>
           Inputs:<br>
@@ -119,7 +119,7 @@
           
           function simulate(allData) {
              //"Inflation","GDP/GDPP/GDPNP","Scaling","Artifice","Savings","Inventory"
-             var inflation=document.getElementById("inflation").value*1;
+             var inflation=document.getElementById("inflation").value*1/12;
              var gdpnp=document.getElementById("gdpnp").value*1;
              var gdpp=document.getElementById("gdpp").value*1;
              var artifice=document.getElementById("artifice").value*1;
@@ -144,7 +144,7 @@
                  var delta2Savings=(savings-lastSavings)-(lastSavings-lastLastSavings);
                  var delta2Inventory=(inventory-lastInventory)-(lastInventory-lastLastInventory);
                  var scalingFactor=getScalingValue(gdpp,gdpnp,artifice,deltaSavings,deltaInventory);
-                 allData["Inflation"].push({ month: tim+1, Inflation: inflation}); 
+                 allData["Inflation"].push({ month: tim+1, Inflation: inflation*12}); 
                  allData["GDP/GDPP/GDPNP"].push({ month: tim+1, GDP: gdpp+gdpnp, GDPP: gdpp, GDPNP: gdpnp }); 
                  allData["Scaling"].push({ month: tim+1, Scaling: scalingFactor }); 
                  allData["Artifice"].push({ month: tim+1, Artifice: artifice }); 
