@@ -70,6 +70,7 @@
           }
           document.write("</tr></table>");
           // https://www.ag-grid.com/charts/javascript/quick-start/
+          var chartObjects=[];
           function makeCharts(allData) {
              for (var cnt=0; cnt<chartNames.length; cnt++) {
                 var lines=[];
@@ -82,7 +83,8 @@
                        lines[cnt2]={ type: 'line', xKey: 'month', yKey: names[cnt2] };
                     }
                 }
-                const chart = agCharts.AgCharts.create({
+                if (chartObjects[chartNames[cnt]]) chartObjects[chartNames[cnt]].destroy();
+                chartObjects[chartNames[cnt]] = agCharts.AgCharts.create({
                    container: document.getElementById(chartNames[cnt]+'Chart'),
                    series: lines,
                    legend: {enabled:true},
