@@ -50,6 +50,8 @@
               (<input type=checkbox id=deltarampinventory> Ramp)
               (<input type=checkbox id=deltanoiseinventory> White Noise)
           <br>
+          <br>
+          <input type=button name="Run Simulation" id=runSim>
           <hr>
       </form>
       <script>
@@ -169,6 +171,11 @@
           var allData=[];
           simulate(allData);
           makeCharts(allData);
+          document.getElementById("runSim").onclick=function() {
+              var allData=[];
+              simulate(allData);
+              makeCharts(allData);
+          };
         </script>
     </body>
 </html>
