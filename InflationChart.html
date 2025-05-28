@@ -14,8 +14,8 @@
           <input type=checkbox id=sndgdpnp> Set delta S to negative delta GDPNP<br>
           <input type=checkbox id=gdpnpcola> Set delta GDPNP to inflation rate<br>
           Starting point:<br>
-          <input type=text value=7.3 id=gdpnp> GDPNP ($T)<br>
-          <input type=text value=19.2 id=gdpp> GDPP ($T)<br>
+          <input type=text value=7.3 id=gdpnp> GDPNP ($T)     <input type=text value=2.5 id=gdpnpGrowthRate> growth rate (% per year)   <input type=text value=0.05 id=gdpnpInflationCorrelation> inflation correlation coefficient    <br>
+          <input type=text value=19.2 id=gdpp> GDPP ($T)      <input type=text value=2.5 id=gdppGrowthRate> growth rate (% per year)   <input type=text value=-0.05 id=gdppInflationCorrelation> inflation correlation coefficient    <br>
           <input type=text value=2 id=inflation> Inflation (% per year)<br>
           <input type=text value=5.8 id=savings> Savings ($T)<br>
           <input type=text value=53 id=inventory> Inventory ($T)<br>
@@ -102,19 +102,19 @@
           }
 
           function getGDPPGrowthRate() {
-              return 0.03/12; // for right now, 3% per year
+              return document.getElementById("gdppGrowthRate").value*1/12;
           }
           
           function getGDPNPGrowthRate() {
-              return 0.03/12; // for right now, 3% per year
+              return document.getElementById("gdpnpGrowthRate").value*1/12;
           }
           
           function getGDPPInflationCoefficient() {
-              return -0.2; // this is a wild guess, based on inflation being bad for production generally
+              return document.getElementById("gdppInflationCorrelation").value*1;
           }
           
           function getGDPNPInflationCoefficient() {
-              return 0.3; // this is a wild guess, based on automatic COLA in non-production jobs
+              return document.getElementById("gdpnpInflationCorrelation").value*1;
           }
           
           function simulate(allData) {
