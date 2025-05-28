@@ -14,8 +14,8 @@
           <input type=checkbox id=sndgdpnp> Set delta S to negative delta GDPNP<br>
           <input type=checkbox id=gdpnpcola> Set delta GDPNP to inflation rate<br>
           Starting point:<br>
-          <input type=text value=19.2 id=gdpnp> GDPNP ($T)<br>
-          <input type=text value=7.3 id=gdpp> GDPP ($T)<br>
+          <input type=text value=7.3 id=gdpnp> GDPNP ($T)<br>
+          <input type=text value=19.2 id=gdpp> GDPP ($T)<br>
           <input type=text value=2 id=inflation> Inflation (%)<br>
           <input type=text value=5.8 id=savings> Savings ($T)<br>
           <input type=text value=53 id=inventory> Inventory ($T)<br>
@@ -100,6 +100,22 @@
           function getScalingValue(gdpp,gdpnp) {
               return (gdpnp+gdpp)/gdpp;
           }
+
+          function getGDPPGrowthRate() {
+              return 0.03/12; // for right now, 3% per year
+          }
+          
+          function getGDPNPGrowthRate() {
+              return 0.03/12; // for right now, 3% per year
+          }
+          
+          function getGDPPInflationCoefficient() {
+              return -0.2; // this is a wild guess, based on inflation being bad for production generally
+          }
+          
+          function getGDPNPInflationCoefficient() {
+              return 0.3; // this is a wild guess, based on automatic COLA in non-production jobs
+          }
           
           function simulate(allData) {
              //"Inflation","GDP/GDPP/GDPNP","Scaling","Artifice","Savings","Inventory"
@@ -122,22 +138,12 @@
                  allData["Artifice"].push({ month: tim+1, Artifice: artifice }); 
                  allData["Savings"].push({ month: tim+1, Savings: savings }); 
                  allData["Inventory"].push({ month: tim+1, Inventory: inventory }); 
+                 gdpp+=gdpp*getGDPPGrowthRate()+gdpp*getGDPPInflationCoefficient()*inflation;
+                 gdpnp+=gdpnp*getGDPNPGrowthRate()+gdpnp*getGDPNPInflationCoefficient()*inflation;
              }
           }
 
-          var allData=[];/*
-          for (var cnt=0; cnt<chartNames.length; cnt++) {
-              var inflationData=[
-                  renameSet({ month: 1, avgTemp: 2.3, odata: 162000 },chartNames[cnt]),
-                  renameSet({ month: 3, avgTemp: 6.3, odata: 302000 },chartNames[cnt]),
-                  renameSet({ month: 5, avgTemp: 16.2, odata: 800000 },chartNames[cnt]),
-                  renameSet({ month: 7, avgTemp: 22.8, odata: 1254000 },chartNames[cnt]),
-                  renameSet({ month: 9, avgTemp: 14.5, odata: 950000 },chartNames[cnt]),
-                  renameSet({ month: 11, avgTemp: 8.9, odata: 200000 },chartNames[cnt]),
-              ];
-
-              allData[chartNames[cnt]]=inflationData;
-          }*/
+          var allData=[];
           simulate(allData);
           makeCharts(allData);
         </script>
