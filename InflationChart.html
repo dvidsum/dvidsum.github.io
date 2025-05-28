@@ -99,14 +99,25 @@
 
           function simulate(allData) {
              //"Inflation","GDP/GDPP/GDPNP","Scaling","Artifice","Savings","Inventory"
-             allData["Inflation"]=[{ month: 1, Inflation: document.getElementById("inflation").value*1 }]; 
-             allData["GDP/GDPP/GDPNP"]=[{ month: 1, GDP: document.getElementById("gdpnp").value*1+document.getElementById("gdpp").value*1, GDPP: document.getElementById("gdpp").value*1, GDPNP: document.getElementById("gdpnp").value*1 }]; 
-             allData["Scaling"]=[{ month: 1, Scaling: 0 }]; 
-             allData["Artifice"]=[{ month: 1, Artifice: document.getElementById("artifice").value*1 }]; 
-             allData["Savings"]=[{ month: 1, Savings: document.getElementById("savings").value*1 }]; 
-             allData["Inventory"]=[{ month: 1, Inventory: document.getElementById("inventory").value*1 }]; 
+             var inflation=document.getElementById("inflation").value*1;
+             var gdpnp=document.getElementById("gdpnp").value*1;
+             var gdpp=document.getElementById("gdpp").value*1;
+             var artifice=document.getElementById("artifice").value*1;
+             var savings=document.getElementById("savings").value*1;
+             var inventory=document.getElementById("inventory").value*1;
+             allData["Inflation"]=[]; 
+             allData["GDP/GDPP/GDPNP"]=[]; 
+             allData["Scaling"]=[]; 
+             allData["Artifice"]=[]; 
+             allData["Savings"]=[]; 
+             allData["Inventory"]=[]; 
              for (var tim=0; tim<36; tim++) {
-                 allData["Inflation"].push({month: tim+2, Inflation: allData["Inflation"][tim]["Inflation"]*1});
+                 allData["Inflation"].push({ month: tim+1, Inflation: inflation}]; 
+                 allData["GDP/GDPP/GDPNP"].push({ month: tim+1, GDP: gdpp+gdpnp, GDPP: gdpp, GDPNP: gdpnp }); 
+                 allData["Scaling"].push({ month: tim+1, Scaling: 0 }); 
+                 allData["Artifice"].push({ month: tim+1, Artifice: artifice }); 
+                 allData["Savings"].push({ month: tim+1, Savings: savings }); 
+                 allData["Inventory"].push({ month: tim+1, Inventory: inventory }); 
              }
           }
 
