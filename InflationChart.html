@@ -97,8 +97,8 @@
               return setMap;
           }
 
-          function getScalingValue(gdpp,gdpnp) {
-              return (gdpnp+gdpp)/gdpp;
+          function getScalingValue(gdpp,gdpnp,artifice,deltaSavings,deltaInventory) {
+              return (gdpnp+gdpp+artifice-deltaSavings)/(gdpp-deltaInventory);
           }
 
           function getGDPPGrowthRate() {
@@ -123,8 +123,15 @@
              var gdpnp=document.getElementById("gdpnp").value*1;
              var gdpp=document.getElementById("gdpp").value*1;
              var artifice=document.getElementById("artifice").value*1;
+             var deltaGdpnp=gdpnp;
+             var deltaGdpp=gdpp;
+             var deltaArtifice=artifice;
              var savings=document.getElementById("savings").value*1;
              var inventory=document.getElementById("inventory").value*1;
+             var lastSavings=document.getElementById("savings").value*1;
+             var lastInventory=document.getElementById("inventory").value*1;
+             var lastLastInventory=document.getElementById("inventory").value*1;
+             var lastLastSavings=document.getElementById("savings").value*1;
              allData["Inflation"]=[]; 
              allData["GDP/GDPP/GDPNP"]=[]; 
              allData["Scaling"]=[]; 
@@ -132,14 +139,24 @@
              allData["Savings"]=[]; 
              allData["Inventory"]=[]; 
              for (var tim=0; tim<36; tim++) {
+                 var deltaSavings=savings-lastSavings;
+                 var deltaInventory=inventory-lastInventory;
+                 var delta2Savings=(savings-lastSavings)-(lastSavings-lastLastSavings);
+                 var delta2Inventory=(inventory-lastInventory)-(lastInventory-lastLastInventory);
+                 var scalingFactor=getScalingValue(gdpp,gdpnp,artifice,deltaSavings,deltaInventory);
                  allData["Inflation"].push({ month: tim+1, Inflation: inflation}); 
                  allData["GDP/GDPP/GDPNP"].push({ month: tim+1, GDP: gdpp+gdpnp, GDPP: gdpp, GDPNP: gdpnp }); 
-                 allData["Scaling"].push({ month: tim+1, Scaling: getScalingValue(gdpp,gdpnp) }); 
+                 allData["Scaling"].push({ month: tim+1, Scaling: scalingFactor }); 
                  allData["Artifice"].push({ month: tim+1, Artifice: artifice }); 
                  allData["Savings"].push({ month: tim+1, Savings: savings }); 
                  allData["Inventory"].push({ month: tim+1, Inventory: inventory }); 
                  gdpp+=gdpp*getGDPPGrowthRate()+gdpp*getGDPPInflationCoefficient()*inflation;
                  gdpnp+=gdpnp*getGDPNPGrowthRate()+gdpnp*getGDPNPInflationCoefficient()*inflation;
+                 inflation+=(deltaGdpnp+deltaArtifice+scalingFactor*delta2Inventory-delta2Savings-(scalingFactor-1)*deltaGdpp)/(gdpp-deltaInventory);
+                 lastLastInventory=lastInventory;
+                 lastInventory=inventory;
+                 lastLastSavings=lastSavings;
+                 lastSavings=savings;
              }
           }
 
