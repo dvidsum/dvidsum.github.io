@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <title>Insights from an Inflation Model</title>
+        <!-- JavaScript Charts Core Library -->
+        <!-- script src="https://cdn.jsdelivr.net/npm/ag-charts-community/dist/umd/ag-charts-community.js"></script -->
+        <script src="ag-charts-community.js"></script>
+    </head>
+    <body>
+      <h2>Insights from an Inflation Model</h2>
+      <form>
+          Economy feedback settings<br>
+          <input type=checkbox id=adgdpnp> Set Artifice to delta GDPNP<br>
+          <input type=checkbox id=sndgdpnp> Set delta S to negative delta GDPNP<br>
+          <input type=checkbox id=gdpnpcola> Set delta GDPNP to inflation rate<br>
+          Starting point:<br>
+          <input type=text value=19.2 id=gdpnp> GDPNP ($T)<br>
+          <input type=text value=7.3 id=gdpp> GDPP ($T)<br>
+          <input type=text value=2 id=inflation> Inflation (%)<br>
+          <input type=text value=5.8 id=savings> Savings ($T)<br>
+          <input type=text value=53 id=inventory> Inventory ($T)<br>
+          Inputs:<br>
+          <input type=text id=deltagdpnp> delta GDPNP ($T)
+              (<input type=checkbox id=deltaimpulsegdpnp> Impulse)
+              (<input type=checkbox id=deltastepgdpnp> Step)
+              (<input type=checkbox id=deltarampgdpnp> Ramp)
+              (<input type=checkbox id=deltanoisegdpnp> White Noise)
+          <br>
+          <input type=text id=deltagdpp> delta GDPP ($T)
+              (<input type=checkbox id=deltaimpulsegdpp> Impulse)
+              (<input type=checkbox id=deltastepgdpp> Step)
+              (<input type=checkbox id=deltarampgdpp> Ramp)
+              (<input type=checkbox id=deltanoisegdpp> White Noise)
+          <br>
+          <input type=text value=0 id=artifice> Artifice ($T)
+              (<input type=checkbox id=impulseartifice> Impulse)
+              (<input type=checkbox id=stepartifice> Step)
+              (<input type=checkbox id=rampartifice> Ramp)
+              (<input type=checkbox id=noiseartifice> White Noise)
+          <br>
+          <input type=text id=deltasavings> delta savings ($T)
+              (<input type=checkbox id=deltaimpulsesavings> Impulse)
+              (<input type=checkbox id=deltastepsavings> Step)
+              (<input type=checkbox id=deltarampsavings> Ramp)
+              (<input type=checkbox id=deltanoisesavings> White Noise)
+          <br>
+          <input type=text id=deltainventory> delta inventory ($T)
+              (<input type=checkbox id=deltaimpulseinventory> Impulse)
+              (<input type=checkbox id=deltastepinventory> Step)
+              (<input type=checkbox id=deltarampinventory> Ramp)
+              (<input type=checkbox id=deltanoiseinventory> White Noise)
+          <br>
+          <hr>
+      </form>
+      <script>
+          var chartNames=[
+             "Inflation","GDP/GDPP/GDPNP","Scaling","Artifice","Savings","Inventory"
+          ];
+          document.write("<table><tr>");
+          for (var cnt=0; cnt<chartNames.length; cnt++) {
+             var units=" $T";
+             if (chartNames[cnt]=="Inflation") units=" %";
+             if (chartNames[cnt]=="Scaling") units="";
+             document.write("<td style='font-family:arial'><center>"+chartNames[cnt]+units+" vs time</center><div id='"+chartNames[cnt]+"Chart'></div></td>");
+             if (((cnt%3)==2)&&(cnt+1<chartNames.length)) {
+                 document.write("</tr><tr>");
+             }
+          }
+          document.write("</tr></table>");
+          // https://www.ag-grid.com/charts/javascript/quick-start/
+          function makeCharts(allData) {
+             for (var cnt=0; cnt<chartNames.length; cnt++) {
+                var lines=[];
+                if (chartNames[cnt].indexOf("/")==-1) {
+                    lines=[{ type: 'line', xKey: 'month', yKey: chartNames[cnt] }];
+                } else {
+                    var names=chartNames[cnt].split("/");
+                    lines=new Array(names.length);
+                    for (var cnt2=0; cnt2<names.length; cnt2++) {
+                       lines[cnt2]={ type: 'line', xKey: 'month', yKey: names[cnt2] };
+                    }
+                }
+                const chart = agCharts.AgCharts.create({
+                   container: document.getElementById(chartNames[cnt]+'Chart'),
+                   series: lines,
+                   legend: {enabled:true},
+                   data: allData[chartNames[cnt]],
+                });
+             }
+          }
+
+          function renameSet(setMap,newName) {
+              var nameList=newName.split("/");
+              for (var cnt=0; cnt<nameList.length; cnt++)
+                  setMap[nameList[cnt]]=setMap["odata"]*(cnt+1)/nameList.length;
+              setMap["interpolation"]={type:'smooth'};
+              return setMap;
+          }
+
+          function simulate(allData) {
+             //"Inflation","GDP/GDPP/GDPNP","Scaling","Artifice","Savings","Inventory"
+             allData["Inflation"]=[{ month: 1, Inflation: document.getElementById("inflation").value*1 }]; 
+             allData["GDP/GDPP/GDPNP"]=[{ month: 1, GDP: document.getElementById("gdpnp").value*1+document.getElementById("gdpp").value*1, GDPP: document.getElementById("gdpp").value*1, GDPNP: document.getElementById("gdpnp").value*1 }]; 
+             allData["Scaling"]=[{ month: 1, Scaling: 0 }]; 
+             allData["Artifice"]=[{ month: 1, Artifice: document.getElementById("artifice").value*1 }]; 
+             allData["Savings"]=[{ month: 1, Savings: document.getElementById("savings").value*1 }]; 
+             allData["Inventory"]=[{ month: 1, Inventory: document.getElementById("inventory").value*1 }]; 
+             for (var tim=0; tim<36; tim++) {
+                 allData["Inflation"].push({month: tim+2, Inflation: allData["Inflation"][tim]["Inflation"]*1});
+             }
+          }
+
+          var allData=[];/*
+          for (var cnt=0; cnt<chartNames.length; cnt++) {
+              var inflationData=[
+                  renameSet({ month: 1, avgTemp: 2.3, odata: 162000 },chartNames[cnt]),
+                  renameSet({ month: 3, avgTemp: 6.3, odata: 302000 },chartNames[cnt]),
+                  renameSet({ month: 5, avgTemp: 16.2, odata: 800000 },chartNames[cnt]),
+                  renameSet({ month: 7, avgTemp: 22.8, odata: 1254000 },chartNames[cnt]),
+                  renameSet({ month: 9, avgTemp: 14.5, odata: 950000 },chartNames[cnt]),
+                  renameSet({ month: 11, avgTemp: 8.9, odata: 200000 },chartNames[cnt]),
+              ];
+
+              allData[chartNames[cnt]]=inflationData;
+          }*/
+          simulate(allData);
+          makeCharts(allData);
+        </script>
+    </body>
+</html>
