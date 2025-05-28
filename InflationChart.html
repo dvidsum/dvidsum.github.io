@@ -142,7 +142,7 @@
              allData["Artifice"]=[]; 
              allData["Savings"]=[]; 
              allData["Inventory"]=[]; 
-             for (var tim=0; tim<36; tim++) {
+             for (var tim=0; tim<60; tim++) {
                  var deltaSavings=savings-lastSavings;
                  var deltaInventory=inventory-lastInventory;
                  var delta2Savings=(savings-lastSavings)-(lastSavings-lastLastSavings);
@@ -151,7 +151,7 @@
                  var deltaGdpp=gdpp-lastGdpp;
                  var deltaArtifice=artifice-lastArtifice;
                  var scalingFactor=getScalingValue(gdpp,gdpnp,artifice,deltaSavings,deltaInventory);
-                 allData["Inflation"].push({ month: tim+1, Inflation: inflation*12}); 
+                 allData["Inflation"].push({ month: tim+1, Inflation: inflation*100*12}); 
                  allData["GDP/GDPP/GDPNP"].push({ month: tim+1, GDP: gdpp+gdpnp, GDPP: gdpp, GDPNP: gdpnp }); 
                  allData["Scaling"].push({ month: tim+1, Scaling: scalingFactor }); 
                  allData["Artifice"].push({ month: tim+1, Artifice: artifice }); 
