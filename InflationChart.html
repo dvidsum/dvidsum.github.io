@@ -123,9 +123,9 @@
              var gdpnp=document.getElementById("gdpnp").value*1;
              var gdpp=document.getElementById("gdpp").value*1;
              var artifice=document.getElementById("artifice").value*1;
-             var deltaGdpnp=gdpnp;
-             var deltaGdpp=gdpp;
-             var deltaArtifice=artifice;
+             var lastGdpnp=gdpnp;
+             var lastGdpp=gdpp;
+             var lastArtifice=artifice;
              var savings=document.getElementById("savings").value*1;
              var inventory=document.getElementById("inventory").value*1;
              var lastSavings=document.getElementById("savings").value*1;
@@ -143,6 +143,9 @@
                  var deltaInventory=inventory-lastInventory;
                  var delta2Savings=(savings-lastSavings)-(lastSavings-lastLastSavings);
                  var delta2Inventory=(inventory-lastInventory)-(lastInventory-lastLastInventory);
+                 var deltaGdpnp=gdpnp-lastGdpnp;
+                 var deltaGdpp=gdpp-lastGdpp;
+                 var deltaArtifice=artifice-lastArtifice;
                  var scalingFactor=getScalingValue(gdpp,gdpnp,artifice,deltaSavings,deltaInventory);
                  allData["Inflation"].push({ month: tim+1, Inflation: inflation*12}); 
                  allData["GDP/GDPP/GDPNP"].push({ month: tim+1, GDP: gdpp+gdpnp, GDPP: gdpp, GDPNP: gdpnp }); 
@@ -157,6 +160,9 @@
                  lastInventory=inventory;
                  lastLastSavings=lastSavings;
                  lastSavings=savings;
+                 lastGdpnp=gdpnp;
+                 lastGdpp=gdpp;
+                 lastArtifice=artifice;
              }
           }
 
