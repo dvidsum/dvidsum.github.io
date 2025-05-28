@@ -97,6 +97,10 @@
               return setMap;
           }
 
+          function getScalingValue(gdpp,gdpnp) {
+              return (gdpnp+gdpp)/gdpp;
+          }
+          
           function simulate(allData) {
              //"Inflation","GDP/GDPP/GDPNP","Scaling","Artifice","Savings","Inventory"
              var inflation=document.getElementById("inflation").value*1;
@@ -112,9 +116,9 @@
              allData["Savings"]=[]; 
              allData["Inventory"]=[]; 
              for (var tim=0; tim<36; tim++) {
-                 allData["Inflation"].push({ month: tim+1, Inflation: inflation}]; 
+                 allData["Inflation"].push({ month: tim+1, Inflation: inflation}); 
                  allData["GDP/GDPP/GDPNP"].push({ month: tim+1, GDP: gdpp+gdpnp, GDPP: gdpp, GDPNP: gdpnp }); 
-                 allData["Scaling"].push({ month: tim+1, Scaling: 0 }); 
+                 allData["Scaling"].push({ month: tim+1, Scaling: getScalingValue(gdpp,gdpnp) }); 
                  allData["Artifice"].push({ month: tim+1, Artifice: artifice }); 
                  allData["Savings"].push({ month: tim+1, Savings: savings }); 
                  allData["Inventory"].push({ month: tim+1, Inventory: inventory }); 
