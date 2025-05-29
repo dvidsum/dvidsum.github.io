@@ -146,6 +146,8 @@
                  // Move time forward
                  gdpp+=gdpp*getGDPPGrowthRate()+gdpp*getGDPPInflationCoefficient()*inflation;
                  gdpnp+=gdpnp*getGDPNPGrowthRate()+gdpnp*getGDPNPInflationCoefficient()*inflation;
+                 if (gdpp<0) break;
+                 if (gdpnp<0) break;
                  // Caclulate state differentials
                  var deltaSavings=savings-lastSavings;
                  var deltaInventory=inventory-lastInventory;
