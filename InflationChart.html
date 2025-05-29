@@ -13,12 +13,41 @@
           <input type=checkbox id=adgdpnp> Set Artifice to delta GDPNP<br>
           <input type=checkbox id=sndgdpnp> Set delta S to negative delta GDPNP<br>
           <input type=checkbox id=gdpnpcola> Set delta GDPNP to inflation rate<br>
-          Starting point:<br>
-          <input type=text value=7.3 id=gdpnp> GDPNP ($T)     <input type=text value=2.5 id=gdpnpGrowthRate> growth rate (% per year)   <input type=text value=0.5 id=gdpnpInflationCorrelation> inflation correlation coefficient    <br>
-          <input type=text value=19.2 id=gdpp> GDPP ($T)      <input type=text value=2.5 id=gdppGrowthRate> growth rate (% per year)   <input type=text value=-0.2 id=gdppInflationCorrelation> inflation correlation coefficient    <br>
-          <input type=text value=2 id=inflation> Inflation (% per year)<br>
-          <input type=text value=5.8 id=savings> Savings ($T)<br>
-          <input type=text value=53 id=inventory> Inventory ($T)<br>
+          Economy metrics:<br>
+          <table>
+              <tr><td>&nbsp;</td><td>growth rate (% per year)</td><td>growth rate standard deviation (% per year)</td><td>inflation correlation coefficient</td></tr>
+              <tr>
+                  <td><input type=text size=5 value=7.3 id=gdpnp> GDPNP ($T)</td>
+                  <td><input type=text size=5 value=2.5 id=gdpnpGrowthRate></td>
+                  <td><input type=text size=5 value=2.5 id=gdpnpGrowthRateSD></td>
+                  <td><input type=text size=5 value=0.5 id=gdpnpInflationCorrelation></td>
+              </tr>
+              <tr>
+                  <td><input type=text size=5 value=19.2 id=gdpp> GDPP ($T)</td>
+                  <td><input type=text size=5 value=2.5 id=gdppGrowthRate></td>
+                  <td><input type=text size=5 value=2.5 id=gdppGrowthRateSD></td>
+                  <td><input type=text size=5 value=-0.2 id=gdppInflationCorrelation></td>
+              </tr>
+              <tr>
+                  <td><input type=text size=5 value=0 id=artifice> Artifice ($T)</td>
+                  <td><input type=text size=5 value=0 id=artificeGrowthRate></td>
+                  <td><input type=text size=5 value=0 id=artificeGrowthRateSD></td>
+                  <td><input type=text size=5 value=0 id=artificeInflationCorrelation></td>
+              </tr>
+              <tr>
+                  <td><input type=text size=5 value=5.8 id=savings> Savings ($T)</td>
+                  <td><input type=text size=5 value=0 id=savingsGrowthRate></td>
+                  <td><input type=text size=5 value=0 id=savingsGrowthRateSD></td>
+                  <td><input type=text size=5 value=0 id=savingsInflationCorrelation></td>
+              </tr>
+              <tr>
+                  <td><input type=text size=5 value=53 id=inventory> Inventory ($T)</td>
+                  <td><input type=text size=5 value=0 id=inventoryGrowthRate></td>
+                  <td><input type=text size=5 value=0 id=inventoryGrowthRateSD></td>
+                  <td><input type=text size=5 value=0 id=inventoryInflationCorrelation></td>
+              </tr>
+          </table>
+          <input type=text size=5 value=2 id=inflation> Inflation (% per year)<br>
           Inputs:<br>
           <input type=text id=deltagdpnp> delta GDPNP ($T)
               (<input type=checkbox id=deltaimpulsegdpnp> Impulse)
@@ -32,7 +61,7 @@
               (<input type=checkbox id=deltarampgdpp> Ramp)
               (<input type=checkbox id=deltanoisegdpp> White Noise)
           <br>
-          <input type=text value=0 id=artifice> Artifice ($T)
+          <input type=text value=0 id=artificeff> Artifice ($T)
               (<input type=checkbox id=impulseartifice> Impulse)
               (<input type=checkbox id=stepartifice> Step)
               (<input type=checkbox id=rampartifice> Ramp)
@@ -113,12 +142,16 @@
               return document.getElementById("gdpnpGrowthRate").value*0.01/12;
           }
           
-          function getGDPPInflationCoefficient() {
-              return document.getElementById("gdppInflationCorrelation").value*1;
+          function getArtificeGrowthRate() {
+              return document.getElementById("artificeGrowthRate").value*0.01/12;
           }
           
-          function getGDPNPInflationCoefficient() {
-              return document.getElementById("gdpnpInflationCorrelation").value*1;
+          function getSavingsGrowthRate() {
+              return document.getElementById("savingsGrowthRate").value*0.01/12;
+          }
+          
+          function getInventoryGrowthRate() {
+              return document.getElementById("inventoryGrowthRate").value*0.01/12;
           }
           
           function simulate(allData) {
@@ -144,8 +177,11 @@
              allData["Inventory"]=[]; 
              for (var tim=0; tim<60; tim++) {
                  // Move time forward
-                 gdpp+=gdpp*getGDPPGrowthRate()+gdpp*getGDPPInflationCoefficient()*inflation;
-                 gdpnp+=gdpnp*getGDPNPGrowthRate()+gdpnp*getGDPNPInflationCoefficient()*inflation;
+                 gdpp+=gdpp*getGDPPGrowthRate()+gdpp*(document.getElementById("gdppInflationCorrelation").value)*inflation;
+                 gdpnp+=gdpnp*getGDPNPGrowthRate()+gdpnp*(document.getElementById("gdpnpInflationCorrelation").value)*inflation;
+                 artifice+=artifice*getArtificeGrowthRate()+artifice*(document.getElementById("artificeInflationCorrelation").value)*inflation;
+                 savings+=savings*getSavingsGrowthRate()+savings*(document.getElementById("savingsInflationCorrelation").value)*inflation;
+                 inventory+=inventory*getInventoryGrowthRate()+inventory*(document.getElementById("inventoryInflationCorrelation").value)*inflation;
                  if (gdpp<0) break;
                  if (gdpnp<0) break;
                  // Caclulate state differentials
@@ -166,8 +202,6 @@
                  allData["Inventory"].push({ month: tim+1, Inventory: inventory }); 
                  // calculate new inflation
                  var deltaInflation=(deltaGdpnp+deltaArtifice+scalingFactor*delta2Inventory-delta2Savings-(scalingFactor-1)*deltaGdpp)/(gdpp-deltaInventory);
-//                 console.log("deltaInflation1: ",deltaGdpnp,deltaArtifice,scalingFactor*delta2Inventory,delta2Savings,(scalingFactor-1)*deltaGdpp);
-//                 console.log("deltaInflation: "+deltaInflation);
                  // save past data for differentials
                  inflation+=deltaInflation;
                  lastLastInventory=lastInventory;
