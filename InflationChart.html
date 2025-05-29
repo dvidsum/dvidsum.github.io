@@ -143,6 +143,10 @@
              allData["Savings"]=[]; 
              allData["Inventory"]=[]; 
              for (var tim=0; tim<60; tim++) {
+                 // Move time forward
+                 gdpp+=gdpp*getGDPPGrowthRate()+gdpp*getGDPPInflationCoefficient()*inflation;
+                 gdpnp+=gdpnp*getGDPNPGrowthRate()+gdpnp*getGDPNPInflationCoefficient()*inflation;
+                 // Caclulate state differentials
                  var deltaSavings=savings-lastSavings;
                  var deltaInventory=inventory-lastInventory;
                  var delta2Savings=(savings-lastSavings)-(lastSavings-lastLastSavings);
@@ -151,17 +155,18 @@
                  var deltaGdpp=gdpp-lastGdpp;
                  var deltaArtifice=artifice-lastArtifice;
                  var scalingFactor=getScalingValue(gdpp,gdpnp,artifice,deltaSavings,deltaInventory);
+                 // set chart data
                  allData["Inflation"].push({ month: tim+1, Inflation: inflation*100*12}); 
                  allData["GDP/GDPP/GDPNP"].push({ month: tim+1, GDP: gdpp+gdpnp, GDPP: gdpp, GDPNP: gdpnp }); 
                  allData["Scaling"].push({ month: tim+1, Scaling: scalingFactor }); 
                  allData["Artifice"].push({ month: tim+1, Artifice: artifice }); 
                  allData["Savings"].push({ month: tim+1, Savings: savings }); 
                  allData["Inventory"].push({ month: tim+1, Inventory: inventory }); 
-                 gdpp+=gdpp*getGDPPGrowthRate()+gdpp*getGDPPInflationCoefficient()*inflation;
-                 gdpnp+=gdpnp*getGDPNPGrowthRate()+gdpnp*getGDPNPInflationCoefficient()*inflation;
+                 // calculate new inflation
                  var deltaInflation=(deltaGdpnp+deltaArtifice+scalingFactor*delta2Inventory-delta2Savings-(scalingFactor-1)*deltaGdpp)/(gdpp-deltaInventory);
-                 console.log("deltaInflation1: ",deltaGdpnp,deltaArtifice,scalingFactor*delta2Inventory,delta2Savings,(scalingFactor-1)*deltaGdpp);
-                 console.log("deltaInflation: "+deltaInflation);
+//                 console.log("deltaInflation1: ",deltaGdpnp,deltaArtifice,scalingFactor*delta2Inventory,delta2Savings,(scalingFactor-1)*deltaGdpp);
+//                 console.log("deltaInflation: "+deltaInflation);
+                 // save past data for differentials
                  inflation+=deltaInflation;
                  lastLastInventory=lastInventory;
                  lastInventory=inventory;
