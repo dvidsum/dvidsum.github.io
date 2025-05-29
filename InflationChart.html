@@ -159,7 +159,9 @@
                  allData["Inventory"].push({ month: tim+1, Inventory: inventory }); 
                  gdpp+=gdpp*getGDPPGrowthRate()+gdpp*getGDPPInflationCoefficient()*inflation;
                  gdpnp+=gdpnp*getGDPNPGrowthRate()+gdpnp*getGDPNPInflationCoefficient()*inflation;
-                 inflation+=(deltaGdpnp+deltaArtifice+scalingFactor*delta2Inventory-delta2Savings-(scalingFactor-1)*deltaGdpp)/(gdpp-deltaInventory);
+                 var deltaInflation=(deltaGdpnp+deltaArtifice+scalingFactor*delta2Inventory-delta2Savings-(scalingFactor-1)*deltaGdpp)/(gdpp-deltaInventory);
+                 console.log("deltaInflation: "+deltaInflation);
+                 inflation+=deltaInflation;
                  lastLastInventory=lastInventory;
                  lastInventory=inventory;
                  lastLastSavings=lastSavings;
