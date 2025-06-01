@@ -6,6 +6,7 @@
         <!-- script src="https://cdn.jsdelivr.net/npm/ag-charts-community/dist/umd/ag-charts-community.js"></script -->
         <script src="ag-charts-community.js"></script>
         <style>
+            body { font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif}
             table, th, td {
               border: 1px solid;
               border-collapse: collapse;
@@ -16,7 +17,7 @@
     <body>
       <h2>Insights from an Inflation Model</h2>
       <form>
-          <b>Preset Examples:</b> <select id=presetExamples onchange='for (var thiskey of Object.keys(economySettings[this.selectedIndex])) { console.log("key: ",thiskey,document.getElementById(thiskey)); document.getElementById(thiskey).value=economySettings[this.selectedIndex][thiskey]; }'> 
+          <b>Preset Examples:</b> <select id=presetExamples onchange='for (var thiskey of Object.keys(economySettings[this.selectedIndex])) { console.log("key: ",thiskey); if (document.getElementById(thiskey)!=null) { document.getElementById(thiskey).value=economySettings[this.selectedIndex][thiskey]; } }'> 
               <script>
                   var economySettings=[
                       { 
