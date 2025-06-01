@@ -16,7 +16,7 @@
     <body>
       <h2>Insights from an Inflation Model</h2>
       <form>
-          Preset Examples: <select id=presetExamples onchange='for (var thiskey of Object.keys(economySettings[this.selectedIndex])) { document.getElementById(thiskey).value=economySettings[this.selectedIndex][thiskey]; }'> 
+          <b>Preset Examples:</b> <select id=presetExamples onchange='for (var thiskey of Object.keys(economySettings[this.selectedIndex])) { document.getElementById(thiskey).value=economySettings[this.selectedIndex][thiskey]; }'> 
               <script>
                   var economySettings=[
                       { 
@@ -44,11 +44,12 @@
                       document.write("<option value="+cnt+">"+economySettings[cnt].name+"</option>");
                   }
               </script>
-          </select>
-          Description:<br>
+          </select><br>
+          <br>
+          <b>Description:</b><br>
           <textarea id=description style='width:90%' rows=5></textarea><br>
           <br>
-          Economy settings:<br>
+          <b>Economy settings:</b><br>
           <table>
               <tr><td>&nbsp;</td><td>growth rate<br>(% per year)</td><td>growth rate<br>standard deviation<br>(% per year)</td><td>inflation correlation<br>coefficient</td></tr>
               <tr>
@@ -85,12 +86,12 @@
           <br>
           <input type=text size=5 value=2 id=inflation> Inital Inflation (% per year)<br>
           <br>
-          Economy contraints:<br>
+          <b>Economy contraints:</b><br>
           <input type=radio name=constraint id=artificeConstraint> GDPNP growth in excess of GDPP growth provided by artifice (printing money, debt monetization, etc)<br>
-          <input type=radio name=constraint id=taxContraint> GDPNP growth in excess of GDPP growth provided by lowered GDPP (taxes, normal debt, etc)<br>
+          <input type=radio name=constraint id=taxContraint selected> GDPNP growth in excess of GDPP growth provided by lowered GDPP (taxes, normal debt, etc)<br>
           <input type=radio name=constraint id=austerityConstraint> GDPNP growth in excess of GDPP growth not allowed (austerity)<br>
           <br>
-          Economy override functions:<br>
+          <b>Economy override functions:</b><br>
           <textarea id=overrideFunctions style='width:90%' rows=5></textarea><br>
           <br>
           <br>
