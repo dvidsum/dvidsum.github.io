@@ -17,7 +17,7 @@
     <body>
       <h2>Insights from an Inflation Model</h2>
       <form>
-          <b>Preset Examples:</b> <select id=presetExamples onchange='for (var thiskey of Object.keys(economySettings[this.selectedIndex])) { console.log("key: ",thiskey); if (document.getElementById(thiskey)!=null) { document.getElementById(thiskey).value=economySettings[this.selectedIndex][thiskey]; } }'> 
+          <b>Preset Examples:</b> <select id=presetExamples onchange='for (var thiskey of Object.keys(economySettings[this.selectedIndex])) { if (document.getElementById(thiskey)!=null) { if (document.getElementById(thiskey).checked!=null) { document.getElementById(thiskey).checked=economySettings[this.selectedIndex][thiskey]==true; } else { document.getElementById(thiskey).value=economySettings[this.selectedIndex][thiskey]; } } }'> 
               <script>
                   var economySettings=[
                       { 
@@ -89,7 +89,7 @@
           <br>
           <b>Economy contraints:</b><br>
           <input type=radio name=constraint id=artificeConstraint> GDPNP growth in excess of GDPP growth provided by artifice (printing money, debt monetization, etc)<br>
-          <input type=radio name=constraint id=taxContraint selected> GDPNP growth in excess of GDPP growth provided by lowered GDPP (taxes, normal debt, etc)<br>
+          <input type=radio name=constraint id=taxContraint checked> GDPNP growth in excess of GDPP growth provided by lowered GDPP (taxes, normal debt, etc)<br>
           <input type=radio name=constraint id=austerityConstraint> GDPNP growth in excess of GDPP growth not allowed (austerity)<br>
           <br>
           <b>Economy override functions:</b><br>
