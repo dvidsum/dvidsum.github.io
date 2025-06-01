@@ -16,7 +16,7 @@
     <body>
       <h2>Insights from an Inflation Model</h2>
       <form>
-          <b>Preset Examples:</b> <select id=presetExamples onchange='for (var thiskey of Object.keys(economySettings[this.selectedIndex])) { document.getElementById(thiskey).value=economySettings[this.selectedIndex][thiskey]; }'> 
+          <b>Preset Examples:</b> <select id=presetExamples onchange='for (var thiskey of Object.keys(economySettings[this.selectedIndex])) { console.log("key: ",thiskey,document.getElementById(thiskey)); document.getElementById(thiskey).value=economySettings[this.selectedIndex][thiskey]; }'> 
               <script>
                   var economySettings=[
                       { 
