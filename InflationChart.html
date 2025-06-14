@@ -24,7 +24,7 @@
                           name:"Default US Economy", description:"Some value estimates for the current US economy",
                           gdpnp:7.3, gdpnpGrowthRate:4.62, gdpnpGrowthRateSD:5.92, gdpnpInflationCorrelation:0.5,
                           gdpp:19.2, gdppGrowthRate:4.62, gdppGrowthRateSD:5.92, gdppInflationCorrelation:-0.2,
-                          artifice:0, artificeGrowthRate:0, artificeGrowthRateSD:0, artificeInflationCorrelation:0,
+                          transfer:0, transferGrowthRate:0, transferGrowthRateSD:0, transferInflationCorrelation:0,
                           savings:5.8, savingsGrowthRate:0, savingsGrowthRateSD:0, savingsInflationCorrelation:0,
                           inventory:53, inventoryGrowthRate:0, inventoryGrowthRateSD:0, inventoryInflationCorrelation:0,
                           inflation:2, artificeConstraint:false, taxContraint:true, austerityConstraint: false,
@@ -34,7 +34,7 @@
                           name:"T2 Default US Economy", description:"",
                           gdpnp:27.3, gdpnpGrowthRate:4.62, gdpnpGrowthRateSD:5.92, gdpnpInflationCorrelation:20.5,
                           gdpp:219.2, gdppGrowthRate:4.62, gdppGrowthRateSD:5.92, gdppInflationCorrelation:-20.2,
-                          artifice:20, artificeGrowthRate:0, artificeGrowthRateSD:0, artificeInflationCorrelation:20,
+                          transfer:20, transferGrowthRate:0, transferGrowthRateSD:0, transferInflationCorrelation:20,
                           savings:25.8, savingsGrowthRate:0, savingsGrowthRateSD:0, savingsInflationCorrelation:20,
                           inventory:253, inventoryGrowthRate:0, inventoryGrowthRateSD:0, inventoryInflationCorrelation:20,
                           inflation:22, artificeConstraint:false, taxContraint:true, austerityConstraint: false,
@@ -66,10 +66,10 @@
                   <td><input type=text size=5 value=-0.2 id=gdppInflationCorrelation></td>
               </tr>
               <tr>
-                  <td><input type=text size=5 value=0 id=artifice> Artifice ($T)</td>
-                  <td><input type=text size=5 value=0 id=artificeGrowthRate></td>
-                  <td><input type=text size=5 value=0 id=artificeGrowthRateSD></td>
-                  <td><input type=text size=5 value=0 id=artificeInflationCorrelation></td>
+                  <td><input type=text size=5 value=0 id=transfer> Transfers ($T)</td>
+                  <td><input type=text size=5 value=0 id=transferGrowthRate></td>
+                  <td><input type=text size=5 value=0 id=transferGrowthRateSD></td>
+                  <td><input type=text size=5 value=0 id=transferInflationCorrelation></td>
               </tr>
               <tr>
                   <td><input type=text size=5 value=5.8 id=savings> Savings ($T)</td>
@@ -87,21 +87,22 @@
           <br>
           <input type=text size=5 value=2 id=inflation> Inital Inflation (% per year)<br>
           <br>
-          <b>Economy contraints:</b><br>
-          <input type=radio name=constraint id=artificeConstraint> GDPNP growth in excess of GDPP growth provided by artifice (printing money, debt monetization, etc)<br>
-          <input type=radio name=constraint id=taxContraint checked> GDPNP growth in excess of GDPP growth provided by lowered GDPP (taxes, normal debt, etc)<br>
-          <input type=radio name=constraint id=austerityConstraint> GDPNP growth in excess of GDPP growth not allowed (austerity)<br>
-          <br>
           <b>Economy override functions:</b><br>
           <textarea id=overrideFunctions style='width:90%' rows=5></textarea><br>
           <br>
           <br>
           <input type=button value="Run Simulation" id=runSim>
           <hr>
+          <br>
+          <b>Economy override functions:</b><br>
+          <br>
+          Formulas and short description / derivation go here.<br>
+          <br>
+          <hr>
       </form>
       <script>
           var chartNames=[
-             "Inflation","GDP/GDPP/GDPNP","Scaling","Artifice","Savings","Inventory"
+             "Inflation","GDP/GDPP/GDPNP","Scaling","Artifice","Tansfers","Savings","Inventory"
           ];
           document.write("<table><tr>");
           for (var cnt=0; cnt<chartNames.length; cnt++) {
@@ -146,8 +147,8 @@
               return setMap;
           }
 
-          function getScalingValue(gdpp,gdpnp,artifice,deltaSavings,deltaInventory) {
-              return (gdpnp+gdpp+artifice-deltaSavings)/(gdpp-deltaInventory);
+          function getScalingValue(gdpp,gdpnp,transfers,deltaSavings,deltaInventory) {
+              return (gdpnp+gdpp-transfers-deltaSavings)/(gdpp-deltaInventory);
           }
 
           function getGDPPGrowthRate() {
@@ -158,8 +159,8 @@
               return document.getElementById("gdpnpGrowthRate").value*0.01/12;
           }
           
-          function getArtificeGrowthRate() {
-              return document.getElementById("artificeGrowthRate").value*0.01/12;
+          function getTransfersGrowthRate() {
+              return document.getElementById("transfersGrowthRate").value*0.01/12;
           }
           
           function getSavingsGrowthRate() {
@@ -175,10 +176,11 @@
              var inflation=document.getElementById("inflation").value*0.01/12;
              var gdpnp=document.getElementById("gdpnp").value*1;
              var gdpp=document.getElementById("gdpp").value*1;
-             var artifice=document.getElementById("artifice").value*1;
+             var transfers=document.getElementById("transfers").value*1;
+             var artifice=gdpnp-transfers;
              var lastGdpnp=gdpnp;
              var lastGdpp=gdpp;
-             var lastArtifice=artifice;
+             var lastTransfers=transfers;
              var savings=document.getElementById("savings").value*1;
              var inventory=document.getElementById("inventory").value*1;
              var lastSavings=document.getElementById("savings").value*1;
@@ -189,15 +191,17 @@
              allData["GDP/GDPP/GDPNP"]=[]; 
              allData["Scaling"]=[]; 
              allData["Artifice"]=[]; 
+             allData["Transfers"]=[]; 
              allData["Savings"]=[]; 
              allData["Inventory"]=[]; 
              for (var tim=0; tim<60; tim++) {
                  // Move time forward
                  gdpp+=gdpp*getGDPPGrowthRate()+gdpp*(document.getElementById("gdppInflationCorrelation").value)*inflation;
                  gdpnp+=gdpnp*getGDPNPGrowthRate()+gdpnp*(document.getElementById("gdpnpInflationCorrelation").value)*inflation;
-                 artifice+=artifice*getArtificeGrowthRate()+artifice*(document.getElementById("artificeInflationCorrelation").value)*inflation;
+                 transfers+=transfers*getTransfersGrowthRate()+transfers*(document.getElementById("transfersInflationCorrelation").value)*inflation;
                  savings+=savings*getSavingsGrowthRate()+savings*(document.getElementById("savingsInflationCorrelation").value)*inflation;
                  inventory+=inventory*getInventoryGrowthRate()+inventory*(document.getElementById("inventoryInflationCorrelation").value)*inflation;
+                 artifice=gdpnp-transfers;
                  // Allow function overrides
                  var overrideFunctions=document.getElementById("overrideFunctions").value;
                  if (overrideFunctions.trim().length>0) eval(overrideFunctions);
@@ -210,17 +214,18 @@
                  var delta2Inventory=(inventory-lastInventory)-(lastInventory-lastLastInventory);
                  var deltaGdpnp=gdpnp-lastGdpnp;
                  var deltaGdpp=gdpp-lastGdpp;
-                 var deltaArtifice=artifice-lastArtifice;
-                 var scalingFactor=getScalingValue(gdpp,gdpnp,artifice,deltaSavings,deltaInventory);
+                 var deltaTransfers=transfers-lastTransfers;
+                 var scalingFactor=getScalingValue(gdpp,gdpnp,transfers,deltaSavings,deltaInventory);
                  // set chart data
                  allData["Inflation"].push({ month: tim+1, Inflation: inflation*100*12}); 
                  allData["GDP/GDPP/GDPNP"].push({ month: tim+1, GDP: gdpp+gdpnp, GDPP: gdpp, GDPNP: gdpnp }); 
                  allData["Scaling"].push({ month: tim+1, Scaling: scalingFactor }); 
                  allData["Artifice"].push({ month: tim+1, Artifice: artifice }); 
+                 allData["Transfers"].push({ month: tim+1, Transfers: transfers }); 
                  allData["Savings"].push({ month: tim+1, Savings: savings }); 
                  allData["Inventory"].push({ month: tim+1, Inventory: inventory }); 
                  // calculate new inflation
-                 var deltaInflation=(deltaGdpnp+deltaArtifice+scalingFactor*delta2Inventory-delta2Savings-(scalingFactor-1)*deltaGdpp)/(gdpp-deltaInventory);
+                 var deltaInflation=(deltaGdpnp-deltaTransfers+scalingFactor*delta2Inventory-delta2Savings-(scalingFactor-1)*deltaGdpp)/(gdpp-deltaInventory);
                  // save past data for differentials
                  inflation+=deltaInflation;
                  lastLastInventory=lastInventory;
@@ -229,7 +234,7 @@
                  lastSavings=savings;
                  lastGdpnp=gdpnp;
                  lastGdpp=gdpp;
-                 lastArtifice=artifice;
+                 lastTransfers=transfers;
              }
           }
 
